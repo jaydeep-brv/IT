@@ -32,22 +32,23 @@ docker compose version   # (NOTE: It's "docker compose", not "docker-compose")
 echo "adding user in docker group... to avoid sudo."
 sudo usermod -aG docker $USER
 
-echo "reloading docker group to reflect the changes..."
+echo "Reloading docker group to reflect the changes... Rebooting your system is recommended"
 newgrp docker
 
-echo "Script end Happy Development :) "
+echo "Done, Happy Development :) "
 
 read -p "Rebooting your system is recommended, would you like to reboot? (Y/N): " choice
 
 case "$choice" in
   [Yy]* )
-    echo "Rebooting now..."
+    echo "Rebooting 5 seconds..."
+    sleep 4
     sudo reboot
     ;;
   [Nn]* )
     echo "Reboot canceled. Please reboot manually later."
     ;;
   * )
-    echo "Invalid input. Please enter Y or N."
+    echo "Invalid input. Please reboot manually later."
     ;;
 esac
