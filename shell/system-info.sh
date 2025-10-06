@@ -1,76 +1,70 @@
 #!/bin/bash
-#
-# Ubuntu System Info Script
-# Collects hardware & system information for troubleshooting performance issues
-#
+# system_baseline.sh
+# Collects key system info for performance diagnostics
 
-OUTPUT_FILE="system_report_$(date +%F_%H.%M.%S).txt"
-echo "======== Gathering system information ========"
+OUTFILE="system_baseline_$(hostname)_$(date +%Y%m%d_%H%M%S).log"
 
-# Helper: print to both terminal and file
-log() {
-    echo -e "$1" | tee -a "$OUTPUT_FILE"
-}
+echo "===== SYSTEM BASELINE REPORT =====" | tee "$OUTFILE"
+echo "Generated on: $(date)" | tee -a "$OUTFILE"
+echo "" | tee -a "$OUTFILE"
 
-log "========================================"
-log "  Ubuntu System Information Report"
-log "  Generated on: $(date)"
-log "========================================"
-log ""
+# --- CPU Info ---
+echo "### CPU INFO ###" | tee -a "$OUTFILE"
+lscpu | grep -E 'Model name|Socket|Core|Thread|MHz|CPU max|CPU min' | tee -a "$OUTFILE"
+echo "" | tee -a "$OUTFILE"
 
-# OS & Kernel
-log ">> OS & Kernel"
-lsb_release -a 2>/dev/null | tee -a "$OUTPUT_FILE"
-uname -a | tee -a "$OUTPUT_FILE"
-log ""
+# --- Memory Info ---
+echo "### MEMORY INFO ###" | tee -a "$OUTFILE"
+free -h | tee -a "$OUTFILE"
+swapon --show | tee -a "$OUTFILE"
+echo "" | tee -a "$OUTFILE"
 
-# CPU Info
-log ">> CPU Information"
-lscpu | grep -Ei 'Architecture|CPU op-mode|Model name|Thread|Core|CPU max MHz|CPU min MHz' | tee -a "$OUTPUT_FILE"
-log ""
+# --- Disk Info ---
+echo "### DISK INFO ###" | tee -a "$OUTFILE"
+df -h --total | grep -E 'Filesystem|/dev/' | tee -a "$OUTFILE"
+echo "" | tee -a "$OUTFILE"
 
-# GPU Info
-log ">> GPU Information"
-lspci | grep -E "VGA|3D" | tee -a "$OUTPUT_FILE"
-log ""
+# Quick disk speed test (read speed)
+echo "### DISK I/O TEST (READ) ###" | tee -a "$OUTFILE"
+sudo hdparm -Tt /dev/$(df / | tail -1 | cut -d' ' -f1 | sed 's#/dev/##') | tee -a "$OUTFILE"
+echo "" | tee -a "$OUTFILE"
 
-# RAM Info
-log ">> Memory (RAM)"
-free -h | tee -a "$OUTPUT_FILE"
-log ""
+# --- System Load ---
+echo "### LOAD AVERAGE ###" | tee -a "$OUTFILE"
+uptime | tee -a "$OUTFILE"
+echo "" | tee -a "$OUTFILE"
 
-# Swap Info
-log ">> Swap"
-swapon --show | tee -a "$OUTPUT_FILE"
-cat /proc/swaps | tee -a "$OUTPUT_FILE"
-log ""
+# --- Top Memory/CPU Processes ---
+echo "### TOP PROCESSES ###" | tee -a "$OUTFILE"
+ps -eo pid,comm,%cpu,%mem --sort=-%mem | head -15 | tee -a "$OUTFILE"
+echo "" | tee -a "$OUTFILE"
 
-# Disk Usage
-log ">> Disk Usage"
-df -hT --total | tee -a "$OUTPUT_FILE"
-log ""
+# --- Temperature and Throttling ---
+if command -v sensors &>/dev/null; then
+    echo "### TEMPERATURE SENSORS ###" | tee -a "$OUTFILE"
+    sensors | tee -a "$OUTFILE"
+else
+    echo "lm-sensors not installed. Run: sudo apt install lm-sensors -y" | tee -a "$OUTFILE"
+fi
+echo "" | tee -a "$OUTFILE"
 
-# Disk Hardware Info
-log ">> Disk Hardware"
-lsblk -o NAME,SIZE,TYPE,MOUNTPOINT,FSTYPE,MODEL | tee -a "$OUTPUT_FILE"
-log ""
+# --- GPU Info ---
+if command -v lspci &>/dev/null; then
+    echo "### GPU INFO ###" | tee -a "$OUTFILE"
+    lspci | grep -E "VGA|3D" | tee -a "$OUTFILE"
+fi
+echo "" | tee -a "$OUTFILE"
 
-# Encryption Status
-log ">> Encryption Status"
-lsblk -o NAME,MOUNTPOINT,FSTYPE | grep "crypt" | tee -a "$OUTPUT_FILE"
-log ""
+# --- Uptime and Power ---
+echo "### UPTIME & POWER STATUS ###" | tee -a "$OUTFILE"
+uptime -p | tee -a "$OUTFILE"
+acpi -a 2>/dev/null | tee -a "$OUTFILE"
+echo "" | tee -a "$OUTFILE"
 
-# Virtualization
-log ">> Virtualization"
-systemd-detect-virt | tee -a "$OUTPUT_FILE"
-log ""
+# --- Kernel & OS ---
+echo "### OS DETAILS ###" | tee -a "$OUTFILE"
+lsb_release -a 2>/dev/null | tee -a "$OUTFILE"
+uname -r | tee -a "$OUTFILE"
+echo "" | tee -a "$OUTFILE"
 
-# Network Info
-log ">> Network Info"
-ip -br addr show | tee -a "$OUTPUT_FILE"
-log ""
-
-# Final message
-echo "======== DONE ========"
-echo " Report saved to $OUTPUT_FILE"
-echo "======================"
+echo "Report saved to: $OUTFILE"
