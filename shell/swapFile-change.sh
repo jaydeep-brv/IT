@@ -1,9 +1,7 @@
 #!/bin/bash
-# Script: recreate_swap.sh
-# Purpose: Delete current swapfile and create a new one equal to total RAM size
 
 echo "===== Swapfile Recreation Script ====="
-echo "This script will delete existing swap file and generate new swapfile which has size equals to current system RAM size."
+echo "If you have swap file size < RAM size then this script will delete existing swap file and generate new swapfile which has size equals to current system RAM size.in rest of cases swap file remains same"
 
 # Get current swap info
 echo ">> Current Swap Information:"
@@ -89,23 +87,8 @@ fi
 echo  "==============================================="
 echo  "Swap File Resize Complete!"
 echo  "The new swap file is active and configured to persist on reboot."
+echo "\e[31mRebooting your system is heavily recommended, if you don't reboot changes may not reflect... Please do reboot accordingly.\e[0m"
 echo  "==============================================="
-
-read -p "Rebooting your system is recommended, would you like to reboot? (Y/N): " choice
-
-case "$choice" in
-  [Yy]* )
-    echo "Rebooting in 5 seconds..."
-    sleep 5
-    sudo reboot
-    ;;
-  [Nn]* )
-    echo "Reboot canceled. Please reboot manually later."
-    ;;
-  * )
-    echo "Invalid input. Please enter Y or N."
-    ;;
-esac
 
 # Show final result
 echo "===================================="

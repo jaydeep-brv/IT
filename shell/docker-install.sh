@@ -5,8 +5,14 @@ sudo apt remove docker docker-engine docker.io containerd runc
 
 echo "Updating system..."
 sudo apt update
+
+echo "Upgrading your system, it may take long time..."
+echo "starting in 5 sec..."
+sleep 4
 sudo apt upgrade -y
 
+echo "=============== starting docker installation ==============="
+sleep 2
 echo "Installing ca-certificates ..."
 sudo apt install ca-certificates curl gnupg -y
 
@@ -37,18 +43,4 @@ newgrp docker
 
 echo "Done, Happy Development :) "
 
-read -p "Rebooting your system is recommended, would you like to reboot? (Y/N): " choice
-
-case "$choice" in
-  [Yy]* )
-    echo "Rebooting 5 seconds..."
-    sleep 4
-    sudo reboot
-    ;;
-  [Nn]* )
-    echo "Reboot canceled. Please reboot manually later."
-    ;;
-  * )
-    echo "Invalid input. Please reboot manually later."
-    ;;
-esac
+echo "\e[31mRebooting your system is recommended to reflect the changes...\e[0m"
