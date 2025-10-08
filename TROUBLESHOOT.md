@@ -9,6 +9,39 @@
 - `apt update` is like updating a catalog of available software, letting your system know what's new.
 - `apt upgrade` is like actually going and getting those new versions of the software you already have installed.
 
+## Basic Things to do:
+
+- Here is some basic thing which you must do to improve performance 
+1. Do basic clean
+    
+    ```shell
+    sudo apt clean
+    sudo apt autoremove
+    sudo journalctl --vacuum-time=3d
+    ```
+   
+2. Close unwanted start-up
+
+    We will use the tool `Stacer`
+    ```shell
+    sudo apt-get install stacer
+    ```
+
+    - `Stacer` is a good GUI tool to discover your system files
+    - You can clean trash, unwanted packages and unwanted snaps too...
+    - Just install it and explore it
+
+3. Install preloader in your machine
+
+    ```shell
+    sudo apt install preload
+    ```
+   - How Preload Works:
+     - Monitors Usage: Preload runs in the background, observing which applications you use and how often.
+     - Predicts Needs: Based on your usage patterns, it predicts which programs you will launch next.
+     - Caches to Memory: It pre-loads the binaries and dependencies of these frequently used applications into your system's RAM.
+     - Speeds Up Startup: By having the application's data already in memory, it can start much faster when you open it.
+
 - To get a **quick look of machine** run below command
 
 ```shell
