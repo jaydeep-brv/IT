@@ -1,22 +1,33 @@
 #!/bin/bash
 
+# --- HELPERS HERE ---
+countdown() {
+  local seconds=$1
+  while [ $seconds -gt 0 ]; do
+    # -ne suppresses newline, \r returns cursor to start
+    echo -ne "Operation starting in: ⏳ $seconds \r"
+    sleep 1
+    ((seconds--))
+  done
+}
+
 # Define the installation/upgrade function
 install_docker_and_components() {
     # Install Docker & Docker Compose Plugin on Ubuntu 24.04 (This is your original script logic)
     echo "Uninstalling Old Docker Versions..."
     # Note: Using -y to automatically confirm removal
-    sudo apt remove docker docker-engine docker.io containerd runc -y
+    sudo apt purge docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
 
     echo "Updating system..."
     sudo apt update
 
     echo "Upgrading your system, it may take long time..."
     echo "Starting in 5 sec..."
-    sleep 4
+    countdown 4
     sudo apt upgrade -y
 
     echo "=============== Starting Docker Installation ==============="
-    sleep 2
+    countdown 3
     echo "Installing ca-certificates ..."
     sudo apt install ca-certificates curl gnupg -y
 
