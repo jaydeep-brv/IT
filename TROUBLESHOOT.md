@@ -31,7 +31,7 @@
     - You can clean trash, unwanted packages and unwanted snaps too...
     - Just install it and explore it
 
-3. Install preloader in your machine
+3. Install preload in your machine
 
     ```shell
     sudo apt install preload
